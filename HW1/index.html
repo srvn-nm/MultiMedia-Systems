@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Wars Hyperspace Effect</title>
+    <!-- Link to p5.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <!-- Link to p5.sound.js library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js"></script>
+    <!-- Link to your Star Wars JavaScript file -->
+    <script src="StarWars.js" defer></script>
+
+  <style>
+    /* Beautiful and simple CSS */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f5f5f5;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    div {
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none; /* Removed border for a cleaner look */
+      border-radius: 5px;
+      cursor: pointer;
+      color: #fff;
+      background-color: #3498db; /* Blue button color */
+      transition: background-color 0.2s ease-in-out; /* Smooth hover effect */
+    }
+    button:hover {
+      background-color: #2980b9; /* Darker blue on hover */
+    }
+    #spaceship-selection button {
+      margin-right: 10px;
+    }
+    input[type="radio"] {
+      margin-right: 5px;
+    }
+    label {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <button onclick="startAudio()">Start Hyperspace</button>
+<script>
+  function startAudio() {
+    if (!hyperspaceSound.isPlaying()) {
+      hyperspaceSound.loop();
+    }
+  }
+</script>
+
+</body>
+</html>
