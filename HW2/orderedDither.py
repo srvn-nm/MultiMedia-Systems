@@ -5,7 +5,14 @@ import numpy as np
 image = cv2.imread('s.jpg')
 
 # تبدیل تصویر به grayscale
-gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+def rgb_to_gray(image):
+    gray_image = np.zeros((image.shape[0], image.shape[1]), dtype=np.uint8)
+    for y in range(image.shape[0]):
+        for x in range(image.shape[1]):
+            gray_image[y, x] = int(0.299 * image[y, x, 0] + 0.587 * image[y, x, 1] + 0.114 * image[y, x, 2])
+    return gray_image
+
+gray_image = rgb_to_gray(image)
 
 # ذخیره تصویر grayscale
 cv2.imwrite('grayscale.png', gray_image)
