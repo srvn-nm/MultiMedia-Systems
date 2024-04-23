@@ -1,15 +1,12 @@
 let stars = [];
 let spaceshipImage;
-let hyperspaceSound;
-let speed = 1; // Starting speed for hyperspace effect and sound playback rate
-let audioStarted = false; // Flag to ensure audio starts correctly
+let speed = 1;
 
 function preload() {
-  // Preload the image and sound; ensure these paths are correct
-  spaceshipImage = loadImage("http://localhost:8080/spaceship.webp");
-  hyperspaceSound = loadSound(
-    "http://localhost:8080/Star_Wars_Hyperdrive_Sound_Effect.mp3"
-  );
+  // Preload the image
+  spaceshipImage = loadImage("spaceship.webp");
+  // Preload the sound
+  hyperspaceSound = loadSound("Star_Wars_Hyperdrive_Sound_Effect.mp3");
 }
 
 function setup() {
@@ -17,16 +14,9 @@ function setup() {
   for (let i = 0; i < 800; i++) {
     stars.push(new Star());
   }
-  // Removed audio playback from setup to comply with browser restrictions
 }
 
 function keyPressed() {
-  // Use keyPressed to adjust the speed; start audio on first interaction
-  if (!audioStarted) {
-    hyperspaceSound.loop();
-    audioStarted = true; // Prevent further attempts to start audio
-  }
-
   // Adjust the speed based on UP or DOWN key press
   if (keyCode === UP_ARROW) {
     speed += 0.05;
@@ -49,9 +39,6 @@ function draw() {
     star.show();
   });
   pop();
-
-  // Adjust the playback rate of the sound based on speed
-  if (audioStarted) hyperspaceSound.rate(speed);
 }
 
 class Star {
