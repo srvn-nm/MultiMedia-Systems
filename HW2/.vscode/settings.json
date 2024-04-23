@@ -16,5 +16,6 @@
     "کردن",
     "ماتریس",
     "وجود"
-  ]
+  ],
+  "DockerRun.DisableDockerrc": true
 }
