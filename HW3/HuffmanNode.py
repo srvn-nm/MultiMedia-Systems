@@ -1,6 +1,5 @@
-import heapq
 from collections import Counter
-
+from heapq import heappush, heappop
 import numpy as np
 
 
@@ -16,32 +15,35 @@ class HuffmanNode:
 
 
 def build_huffman_tree(symbols, probabilities):
-  # Create a frequency table
-  freq_table = Counter(symbols)
+    # Create a frequency table
+    freq_table = Counter(symbols)
 
-  # Create Huffman nodes for each symbol
-  nodes = [HuffmanNode(char, freq) for char, freq in freq_table.items()]
+    # Create Huffman nodes for each symbol
+    nodes = [HuffmanNode(char, freq) for char, freq in freq_table.items()]
 
-  # Build Huffman tree using a priority queue
-  while len(nodes) > 1:
-    # Extract two nodes with lowest frequencies
-    node1 = heappop(nodes)
-    node2 = heappop(nodes)
+    # Build Huffman tree using a priority queue
+    while len(nodes) > 1:
+        # Extract two nodes with the lowest frequency
+        node1 = heappop(nodes)
+        node2 = heappop(nodes)
 
-    # Create a parent node with combined frequency
-    parent = HuffmanNode(None, node1.freq + node2.freq)
-    parent.left = node1
-    parent.right = node2
+        # Create a parent node with combined frequency
+        parent = HuffmanNode(None, node1.freq + node2.freq)
+        parent.left = node1
+        parent.right = node2
 
-    # Add parent node back to the queue
-    heappush(nodes, parent)
+        # Add parent node back to the queue
+        heappush(nodes, parent)
 
-  # The remaining node is the root of the Huffman tree
-  return nodes[0]
+    # The remaining node is the root of the Huffman tree
+    return nodes[0]
 
 
 # Function to generate Huffman codes from the Huffman Tree
 def generate_huffman_codes(node, prefix='', codebook=None):
+    if node is None:
+        return
+
     if codebook is None:
         codebook = {}
 
