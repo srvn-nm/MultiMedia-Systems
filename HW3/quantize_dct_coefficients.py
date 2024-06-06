@@ -1,6 +1,6 @@
 import numpy as np
 
-# Define a standard quantization matrix for luminance (if nothing was passed)
+# Define standard quantization matrices
 quant_matrix1 = np.array([
     [16, 11, 10, 16, 24, 40, 51, 61],
     [12, 12, 14, 19, 26, 58, 60, 55],
@@ -11,6 +11,8 @@ quant_matrix1 = np.array([
     [49, 64, 78, 87, 103, 121, 120, 101],
     [72, 92, 95, 98, 112, 100, 103, 99]
 ])
+quant_matrix2 = quant_matrix1 * 1.5  # Example custom quantization matrix
+quant_matrix3 = quant_matrix1 * 2.0  # Example custom quantization matrix
 
 
 def quantize_dct_coefficients(dct_coefficients, quant_matrix=quant_matrix1):
