@@ -18,7 +18,6 @@ def inverse_dct_on_blocks(dequantized_dct_coefficients):
                 # Perform inverse DCT
                 idct_block = cv2.idct(block)
                 # Place the reconstructed block in the reconstructed image array
-                reconstructed_image[c, i * block_size:(i + 1) * block_size,
-                j * block_size:(j + 1) * block_size] = idct_block
+                reconstructed_image[c, i * block_size:(i + 1) * block_size, j * block_size:(j + 1) * block_size] = idct_block
 
     return reconstructed_image
