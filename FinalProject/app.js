@@ -4,16 +4,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const videoTitle = document.getElementById("video-title");
   const videoDetails = document.getElementById("video-details");
   const commentsList = document.getElementById("comments-list");
+  const summarySection = document.getElementById("summary");
 
   const videos = [
     {
       title: "The Stand Off",
-      name: "shaun_the_sheep_s03e01",
       year: 2012,
       genre: "Animation, Comedy",
       duration: "7:00",
       type: "local",
       file: "videos/shaun_the_sheep_s03e01.mp4",
+      thumbnail: "thumbnails/shaun_the_sheep_s03e01.jpg",
       comments: [
         { text: "Exciting episode!", sentiment: "positive" },
         { text: "Loved the plot!", sentiment: "positive" },
@@ -22,12 +23,12 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     {
       title: "The Coconut",
-      name: "shaun_the_sheep_s03e02",
       year: 2012,
       genre: "Animation, Comedy",
       duration: "7:00",
       type: "local",
       file: "videos/shaun_the_sheep_s03e02.mp4",
+      thumbnail: "thumbnails/shaun_the_sheep_s03e02.jpg",
       comments: [
         { text: "Hilarious!", sentiment: "positive" },
         { text: "So much fun.", sentiment: "positive" },
@@ -36,12 +37,12 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     {
       title: "You Missed a Bit",
-      name: "shaun_the_sheep_s03e03",
       year: 2012,
       genre: "Animation, Comedy",
       duration: "7:00",
-      type: "local",
-      file: "videos/shaun_the_sheep_s03e03.mp4",
+      type: "dash",
+      file: "videos/shaun_the_sheep_s03e03.mpd",
+      thumbnail: "thumbnails/shaun_the_sheep_s03e03.jpg",
       comments: [
         { text: "Very funny!", sentiment: "positive" },
         { text: "Loved Bitzer's antics.", sentiment: "positive" },
@@ -50,12 +51,12 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     {
       title: "Let's Spray",
-      name: "shaun_the_sheep_s03e04",
       year: 2012,
       genre: "Animation, Comedy",
       duration: "7:00",
-      type: "local",
-      file: "videos/shaun_the_sheep_s03e04.mp4",
+      type: "dash",
+      file: "videos/shaun_the_sheep_s03e04.mpd",
+      thumbnail: "thumbnails/shaun_the_sheep_s03e04.jpg",
       comments: [
         { text: "Creative and fun!", sentiment: "positive" },
         { text: "Shaun is so mischievous.", sentiment: "positive" },
@@ -64,12 +65,13 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     {
       title: "The Crow",
-      name: "shaun_the_sheep_s03e05",
       year: 2012,
       genre: "Animation, Comedy",
       duration: "7:00",
-      type: "local",
-      file: "videos/shaun_the_sheep_s03e05.mp4",
+      type: "cdn_dash",
+      file: "https://multimedia0sarvin.arvanvod.ir/7D4zwNpR1q/eLmjJeXqA0/h_,144_200,240_400,360_800,k.mp4.list/manifest.mpd",
+      thumbnail:
+        "https://multimedia0sarvin.arvanvod.ir/7D4zwNpR1q/eLmjJeXqA0/thumbnail.jpg",
       comments: [
         { text: "Loved the crow!", sentiment: "positive" },
         { text: "So entertaining.", sentiment: "positive" },
@@ -78,12 +80,13 @@ document.addEventListener("DOMContentLoaded", function () {
     },
     {
       title: "Shaun the Fugitive",
-      name: "shaun_the_sheep_s03e06",
       year: 2012,
       genre: "Animation, Comedy",
       duration: "7:00",
-      type: "local",
-      file: "videos/shaun_the_sheep_s03e06.mp4",
+      type: "cdn_hls",
+      file: "https://multimedia0sarvin.arvanvod.ir/7D4zwNpR1q/xAnjpXjmyM/h_,144_200,240_400,360_800,k.mp4.list/master.m3u8",
+      thumbnail:
+        "https://multimedia0sarvin.arvanvod.ir/7D4zwNpR1q/xAnjpXjmyM/thumbnail.jpg",
       comments: [
         { text: "Action-packed!", sentiment: "positive" },
         { text: "Exciting plot.", sentiment: "positive" },
@@ -91,33 +94,77 @@ document.addEventListener("DOMContentLoaded", function () {
       ],
     },
   ];
-
   // Function to update video details and comments
   function updateVideoDetails(video) {
-    videoPlayer.src = video.file;
+    if (video.type === "local") {
+      videoPlayer.src = video.file;
+    } else if (video.type === "dash") {
+      videoPlayer.src = video.file;
+    } else if (video.type === "cdn_dash") {
+      videoPlayer.src = video.file;
+    } else if (video.type === "cdn_hls") {
+      videoPlayer.src = video.file;
+    }
+    videoPlayer.title = video.title; // Update iframe title
     videoTitle.textContent = video.title;
     videoDetails.textContent = `Duration: ${video.duration}, Genre: ${video.genre}, Year: ${video.year}`;
     commentsList.innerHTML = "";
-    video.comments.forEach((comment) => {
+    video.comments.forEach((comment, index) => {
       const commentItem = document.createElement("li");
       commentItem.textContent = `${comment.text} (${comment.sentiment})`;
+      commentItem.id = `comment-${index}`;
       commentsList.appendChild(commentItem);
     });
+
+    // Get and display the summary
+    getSummary(video.details);
+
+    // Analyze and display the sentiment of comments
+    const comments = video.comments.map((comment) => comment.text);
+    analyzeComments(comments);
+  }
+
+  // Function to send text to the summarization endpoint
+  function getSummary(text) {
+    fetch("/summarize", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text: text }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        summarySection.innerText = data.summary;
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+
+  // Function to send comments to the sentiment analysis endpoint
+  function analyzeComments(comments) {
+    fetch("/analyze", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ comments: comments }),
+    })
+      .then((response) => response.json())
+      .then((results) => {
+        results.forEach((result, index) => {
+          document.getElementById(
+            `comment-${index}`
+          ).textContent = `${result.text} (${result.sentiment})`;
+        });
+      })
+      .catch((error) => console.error("Error:", error));
   }
 
   // Create video items dynamically
   videos.forEach((video) => {
     const videoItem = document.createElement("div");
-    const thumbnailSrc = `thumbnails/${video.name}.jpg`;
-
-    // Error handling for missing thumbnails
-    const img = new Image();
-    img.onerror = function () {
-      videoItem.innerHTML = `<div class="error-thumbnail">Thumbnail Not Found</div>`;
-    };
-    img.src = thumbnailSrc;
-
-    videoItem.innerHTML = `<img src="${thumbnailSrc}" alt="${video.title}" />`;
+    videoItem.className = "video-item"; // Add a class for styling
+    videoItem.innerHTML = `<img src="${video.thumbnail}" alt="${video.title}" />`;
     videoItem.addEventListener("click", () => {
       updateVideoDetails(video);
     });
