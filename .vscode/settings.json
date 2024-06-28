@@ -2,6 +2,7 @@
   "DockerRun.DisableDockerrc": true,
   "cSpell.words": [
     "Bitzer's",
+    "huggingface",
     "Hyperdrive",
     "mozallowfullscreen",
     "tfjs",

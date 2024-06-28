@@ -5,6 +5,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const videoDetails = document.getElementById("video-details");
   const commentsList = document.getElementById("comments-list");
   const summarySection = document.getElementById("summary");
+  const newComment = document.getElementById("new-comment");
+  const addCommentButton = document.getElementById("add-comment");
+  const searchInput = document.getElementById("search");
 
   const videos = [
     {
@@ -13,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
       genre: "Animation, Comedy",
       duration: "7:00",
       type: "local",
-      file: "videos/shaun_the_sheep_s03e01.mp4",
+      file: "videos/shaun_the_sheep_s03e01.mkv",
       thumbnail: "thumbnails/shaun_the_sheep_s03e01.jpg",
       comments: [
         { text: "Exciting episode!", sentiment: "positive" },
@@ -27,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
       genre: "Animation, Comedy",
       duration: "7:00",
       type: "local",
-      file: "videos/shaun_the_sheep_s03e02.mp4",
+      file: "videos/shaun_the_sheep_s03e02.mkv",
       thumbnail: "thumbnails/shaun_the_sheep_s03e02.jpg",
       comments: [
         { text: "Hilarious!", sentiment: "positive" },
@@ -41,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
       genre: "Animation, Comedy",
       duration: "7:00",
       type: "dash",
-      file: "videos/shaun_the_sheep_s03e03.mpd",
+      file: "videos/shaun_the_sheep_s03e03.mkv",
       thumbnail: "thumbnails/shaun_the_sheep_s03e03.jpg",
       comments: [
         { text: "Very funny!", sentiment: "positive" },
@@ -55,7 +58,8 @@ document.addEventListener("DOMContentLoaded", function () {
       genre: "Animation, Comedy",
       duration: "7:00",
       type: "dash",
-      file: "videos/shaun_the_sheep_s03e04.mpd",
+      file: "videos/shaun_the_sheep_s03e04.mkv",
+
       thumbnail: "thumbnails/shaun_the_sheep_s03e04.jpg",
       comments: [
         { text: "Creative and fun!", sentiment: "positive" },
@@ -96,15 +100,8 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
   // Function to update video details and comments
   function updateVideoDetails(video) {
-    if (video.type === "local") {
-      videoPlayer.src = video.file;
-    } else if (video.type === "dash") {
-      videoPlayer.src = video.file;
-    } else if (video.type === "cdn_dash") {
-      videoPlayer.src = video.file;
-    } else if (video.type === "cdn_hls") {
-      videoPlayer.src = video.file;
-    }
+    videoPlayer.src = video.file;
+    videoTitle.textContent = video.title;
     videoPlayer.title = video.title; // Update iframe title
     videoTitle.textContent = video.title;
     videoDetails.textContent = `Duration: ${video.duration}, Genre: ${video.genre}, Year: ${video.year}`;
@@ -170,5 +167,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     videoList.appendChild(videoItem);
+  });
+  // Handle new comments submission
+  addCommentButton.addEventListener("click", () => {
+    const commentText = newComment.value;
+    if (commentText) {
+      const video = videos.find((v) => v.title === videoTitle.textContent);
+      video.comments.push({ text: commentText, sentiment: "pending" });
+      updateVideoDetails(video);
+      newComment.value = "";
+    }
+  });
+
+  // Handle video search
+  searchInput.addEventListener("input", () => {
+    const searchTerm = searchInput.value.toLowerCase();
+    videoList.innerHTML = "";
+    videos
+      .filter((video) => video.title.toLowerCase().includes(searchTerm))
+      .forEach((video) => {
+        const videoItem = document.createElement("div");
+        videoItem.className = "video-item"; // Add a class for styling
+        videoItem.innerHTML = `<img src="${video.thumbnail}" alt="${video.title}" /> <h3>${video.title}</h3>`;
+        videoItem.addEventListener("click", () => {
+          updateVideoDetails(video);
+        });
+        videoList.appendChild(videoItem);
+      });
   });
 });

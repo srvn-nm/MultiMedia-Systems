@@ -1,9 +1,8 @@
 const express = require("express");
 const path = require("path");
-const tf = require("@tensorflow/tfjs-node");
-const qna = require("@tensorflow-models/qna");
-const use = require("@tensorflow-models/universal-sentence-encoder");
+const bodyParser = require("body-parser");
 const toxicity = require("@tensorflow-models/toxicity");
+const tf = require("@tensorflow/tfjs-node");
 
 const app = express();
 const port = 3000;
@@ -18,14 +17,31 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "index.html"));
 });
 
-// Load TensorFlow models
-let useModel;
+// Load the toxicity model
 let toxicityModel;
+toxicity.load(0.9).then((model) => {
+  toxicityModel = model;
+});
 
-(async () => {
-  useModel = await use.load();
-  toxicityModel = await toxicity.load(0.9);
-})();
+// Function to analyze comments
+const analyzeComments = async (comments) => {
+  if (!toxicityModel) {
+    throw new Error("Model is not loaded yet.");
+  }
+  const results = await toxicityModel.classify(comments);
+  return comments.map((comment, index) => {
+    const result = results.map((category) => ({
+      label: category.label,
+      match: category.results[index].match,
+    }));
+    const isToxic = result.some((res) => res.match);
+    return {
+      text: comment,
+      sentiment: isToxic ? "negative" : "positive",
+    };
+  });
+};
+
 
 // Endpoint for summarization
 app.post("/summarize", async (req, res) => {
@@ -38,18 +54,12 @@ app.post("/summarize", async (req, res) => {
 // Endpoint for sentiment analysis
 app.post("/analyze", async (req, res) => {
   const { comments } = req.body;
-  const results = await Promise.all(
-    comments.map(async (comment) => {
-      const embeddings = await useModel.embed([comment]);
-      const toxicityPredictions = await toxicityModel.classify(comment);
-      const toxic = toxicityPredictions.some((prediction) =>
-        prediction.results.some((result) => result.match)
-      );
-      const sentiment = toxic ? "negative" : "positive";
-      return { text: comment, sentiment };
-    })
-  );
-  res.json(results);
+    try {
+      const results = await analyzeComments(comments);
+      res.json(results);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
 });
 
 app.listen(port, () => {
