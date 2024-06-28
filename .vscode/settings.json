@@ -1,4 +1,10 @@
 {
   "DockerRun.DisableDockerrc": true,
-  "cSpell.words": ["Bitzer's", "Hyperdrive"]
+  "cSpell.words": [
+    "Bitzer's",
+    "Hyperdrive",
+    "mozallowfullscreen",
+    "tfjs",
+    "webkitallowfullscreen"
+  ]
 }
